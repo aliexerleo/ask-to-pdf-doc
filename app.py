@@ -8,7 +8,7 @@ from langchain.chains.question_answering import load_qa_chain
 from dotenv import load_dotenv
 load_dotenv()
 
-main_dir = os.listdir('/Users/aliexermayor/Downloads/flights')
+main_dir = os.listdir('your dir')
 
 
 """ list of PDFs path """
@@ -17,7 +17,7 @@ main_dir = os.listdir('/Users/aliexermayor/Downloads/flights')
 def get_paths(list_items):
     all_files = []
     for file in list_items:
-        path = '/Users/aliexermayor/Downloads/flights/'+file
+        path = 'your dir'+file
         all_files.append(path)
 
     return all_files
