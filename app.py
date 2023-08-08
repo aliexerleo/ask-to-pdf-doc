@@ -1,3 +1,4 @@
+import os
 from PyPDF2 import PdfReader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.embeddings import HuggingFaceEmbeddings
@@ -7,31 +8,52 @@ from langchain.chains.question_answering import load_qa_chain
 from dotenv import load_dotenv
 load_dotenv()
 
-pdf_path = "./CV-Aliexer-Mayor.pdf"
+main_dir = os.listdir('/Users/aliexermayor/Downloads/flights')
 
 
-def make_embeddings(pdf_file):
-    pdf_reader = PdfReader(pdf_file)
-    text = ''
-    for page in pdf_reader.pages:
-        text += page.extract_text()
-    # chunks proccess
-    text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=800,
-        chunk_overlap=100,
-        length_function=len
-    )
-    chunk = text_splitter.split_text(text)
-    embeddings = HuggingFaceEmbeddings(
-        model_name='sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2')
-    knowledge_base = FAISS.from_texts(chunk, embeddings)
-
-    return knowledge_base
+""" list of PDFs path """
 
 
-if pdf_path:
-    knowledge_base = make_embeddings(pdf_path)
-    user_question = input("Enter a query: ")
+def get_paths(list_items):
+    all_files = []
+    for file in list_items:
+        path = '/Users/aliexermayor/Downloads/flights/'+file
+        all_files.append(path)
+
+    return all_files
+
+
+""" embedding in base of PDFs content """
+
+
+def make_embeddings(list_paths):
+    full_text = ''
+    # extract all content of PDFs
+    for pdf in list_paths:
+        pdf_reader = PdfReader(pdf)
+        for page in pdf_reader.pages:
+            full_text += page.extract_text()
+
+        # segmentation of the content
+        text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=600,
+            chunk_overlap=100,
+            length_function=len
+        )
+        chunk = text_splitter.split_text(full_text)
+        embeddings = HuggingFaceEmbeddings(
+            model_name='sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2')
+        knowledge_data_base = FAISS.from_texts(chunk, embeddings)
+
+    return knowledge_data_base
+
+
+# try the model with any question about PDFs content
+
+if main_dir:
+    list_files = get_paths(main_dir)
+    knowledge_base = make_embeddings(list_files)
+    user_question = input("Enter a question about your PDFs content: ")
     if user_question:
         slices = knowledge_base.similarity_search(user_question, 3)
         llm = ChatOpenAI(model_name='gpt-3.5-turbo')
