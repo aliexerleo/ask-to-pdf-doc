@@ -8,7 +8,7 @@ from langchain.chains.question_answering import load_qa_chain
 from dotenv import load_dotenv
 load_dotenv()
 
-main_dir = os.listdir('your dir')
+main_dir = os.listdir('Your path')
 
 
 """ list of PDFs path """
@@ -17,7 +17,7 @@ main_dir = os.listdir('your dir')
 def get_paths(list_items):
     all_files = []
     for file in list_items:
-        path = 'your dir'+file
+        path = 'Your path'+file
         all_files.append(path)
 
     return all_files
@@ -30,7 +30,8 @@ def make_embeddings(list_paths):
     full_text = ''
     # extract all content of PDFs
     for pdf in list_paths:
-        pdf_reader = PdfReader(pdf)
+        if pdf.endswith('.pdf'):
+            pdf_reader = PdfReader(pdf)
         for page in pdf_reader.pages:
             full_text += page.extract_text()
 
