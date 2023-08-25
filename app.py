@@ -32,19 +32,19 @@ def make_embeddings(list_paths):
     for pdf in list_paths:
         if pdf.endswith('.pdf'):
             pdf_reader = PdfReader(pdf)
-        for page in pdf_reader.pages:
-            full_text += page.extract_text()
+            for page in pdf_reader.pages:
+                full_text += page.extract_text()
 
-        # segmentation of the content
-        text_splitter = RecursiveCharacterTextSplitter(
-            chunk_size=600,
-            chunk_overlap=100,
-            length_function=len
-        )
-        chunk = text_splitter.split_text(full_text)
-        embeddings = HuggingFaceEmbeddings(
-            model_name='sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2')
-        knowledge_data_base = FAISS.from_texts(chunk, embeddings)
+            # segmentation of the content
+            text_splitter = RecursiveCharacterTextSplitter(
+                chunk_size=600,
+                chunk_overlap=100,
+                length_function=len
+            )
+            chunk = text_splitter.split_text(full_text)
+            embeddings = HuggingFaceEmbeddings(
+                model_name='sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2')
+            knowledge_data_base = FAISS.from_texts(chunk, embeddings)
 
     return knowledge_data_base
 
